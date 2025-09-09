@@ -12,3 +12,7 @@ def test_arriesgo_palabra_y__no_acierto():
 def test_arriesgo_letra_y_acierto():
     letra = arriesgoLetra("y")
     assert letra == True
+
+def test_arriesgo_letra_y_no_acierto():
+    letra = arriesgoLetra("z")
+    assert letra == False
