@@ -16,3 +16,10 @@ def test_arriesgo_letra_y_acierto():
 def test_arriesgo_letra_y_no_acierto():
     letra = arriesgoLetra("z")
     assert letra == False
+
+
+## Test de Vidas
+
+def test_no_acierto_descuenta_vida():
+    vida = descuentaVida(arriesgoLetra("z"))
+    assert vida == -1
