@@ -1,5 +1,5 @@
 import pytest
-from ahorcado import arriesgoPalabra,arriesgoLetra
+from ahorcado import arriesgoPalabra,arriesgoLetra,descuentaVida
 
 def test_arriesgo_palabra_y_acierto():
     palabra = arriesgoPalabra("python")

@@ -10,3 +10,7 @@ def arriesgoLetra(letra):
             return True
         else:
             return False
+
+def descuentaVida(letra):
+        if ( letra == False):
+            return -1
