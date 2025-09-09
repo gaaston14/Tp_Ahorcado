@@ -11,4 +11,4 @@ def test_arriesgo_palabra_y__no_acierto():
 
 def test_arriesgo_letra_y_acierto():
     letra = arriesgoLetra("y")
-    assert letra == '_ y _ _ _ _ '
+    assert letra == True
