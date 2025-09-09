@@ -4,3 +4,7 @@ def arriesgoPalabra(palabra):
             return True
         else:
             return False
+        
+def arriesgoLetra(letra):
+        if( letra.lower() in "python"):
+            return True
