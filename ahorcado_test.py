@@ -8,3 +8,7 @@ def test_arriesgo_palabra_y_acierto():
 def test_arriesgo_palabra_y__no_acierto():
     palabra = arriesgoPalabra("javascript")
     assert palabra == False
+
+def test_arriesgo_letra_y_acierto():
+    letra = arriesgoLetra("y")
+    assert letra == '_ y _ _ _ _ '
