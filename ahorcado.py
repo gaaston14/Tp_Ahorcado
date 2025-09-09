@@ -8,3 +8,5 @@ def arriesgoPalabra(palabra):
 def arriesgoLetra(letra):
         if( letra.lower() in "python"):
             return True
+        else:
+            return False
