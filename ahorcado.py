@@ -27,5 +27,7 @@ def arriesgoLetra(letra):
         return False
 
 def descuentaVida(letra):
-        if ( letra == False):
-            return -1
+    if ( letra == False):
+        return -1
+    else:
+        return False
