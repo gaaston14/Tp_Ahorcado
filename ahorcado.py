@@ -6,13 +6,7 @@ def arriesgoPalabra(palabra):
             return True
         else:
             return False
-"""        
-def arriesgoLetra(letra):
-        if( letra.lower() in "python"):
-            return True
-        else:
-            return False
-"""
+
 def arriesgoLetra(letra):
     global letras_intentadas, letras_acertadas
 
@@ -31,7 +25,6 @@ def arriesgoLetra(letra):
         return True
     else:
         return False
-
 
 def descuentaVida(letra):
         if ( letra == False):
