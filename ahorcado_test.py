@@ -60,3 +60,16 @@ def test_arriesgo_letra_correcta_y_la_muestra():
     progreso = mostrarProgreso("python")
 
     assert progreso == "p _ _ _ _ _"
+
+def test_arriesgo_letra_incorrecta_y_no_la_muestra():
+    # Reiniciamos el estado
+    letras_acertadas.clear()
+    letras_intentadas.clear()
+
+    # Intentamos una letra que no está en "python"
+    arriesgoLetra("z")
+
+    # Pedimos el progreso
+    progreso = mostrarProgreso("python")
+
+    assert progreso == "_ _ _ _ _ _"
