@@ -1,6 +1,14 @@
 letras_intentadas = set()
 letras_acertadas = set()
 
+def perdio(vidas_restantes):
+    return vidas_restantes <= 0
+
+def gano(palabra):
+    return all(letra in letras_acertadas for letra in palabra)
+
+
+
 def arriesgoPalabra(palabra):
         if( palabra == "python"):
             return True
@@ -41,10 +49,8 @@ def mostrarProgreso(palabra):
             progreso.append("_")
     return " ".join(progreso)
 
-def gano(palabra):
-    return all(letra in letras_acertadas for letra in palabra)
-
-
-def mostrarResultado(palabra):
+def mostrarResultado(palabra, vidas_restantes=None):
     if gano(palabra):
         return "¡Ganaste!"
+    if vidas_restantes is not None and perdio(vidas_restantes):
+        return "¡Perdiste!"
