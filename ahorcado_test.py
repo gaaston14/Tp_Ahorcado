@@ -45,3 +45,18 @@ def test_acierto_no_descuenta_vida():
     acierto = arriesgoLetra("p")  
     vida = descuentaVida(acierto)
     assert vida == 0
+
+## Test de Funcionalidad Mostrar Progreso de la Palabra
+
+def test_arriesgo_letra_correcta_y_la_muestra():
+    # Reiniciamos el estado
+    letras_acertadas.clear()
+    letras_intentadas.clear()
+
+    # Intentamos la letra "p"
+    arriesgoLetra("p")
+
+    # Pedimos el progreso
+    progreso = mostrarProgreso("python")
+
+    assert progreso == "p _ _ _ _ _"
