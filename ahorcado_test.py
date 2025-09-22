@@ -73,3 +73,20 @@ def test_arriesgo_letra_incorrecta_y_no_la_muestra():
     progreso = mostrarProgreso("python")
 
     assert progreso == "_ _ _ _ _ _"
+
+## Test Ganar o Perder el Juego
+
+def test_gano_y_muestra_que_gane():
+    # Reiniciamos el estado
+    letras_acertadas.clear()
+    letras_intentadas.clear()
+
+    # Simulamos haber acertado todas las letras de la palabra "python"
+    for ch in set("python"):
+        letras_acertadas.add(ch)
+
+    # El progreso debe mostrar la palabra completa
+    assert mostrarProgreso("python") == "p y t h o n"
+
+    assert gano("python") == True
+    assert mostrarResultado("python") == "¡Ganaste!"
