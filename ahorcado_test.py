@@ -1,5 +1,5 @@
 import pytest
-from ahorcado import arriesgoPalabra,arriesgoLetra,descuentaVida,letras_acertadas, letras_intentadas, mostrarProgreso
+from ahorcado import arriesgoPalabra,arriesgoLetra,descuentaVida,letras_acertadas, letras_intentadas, mostrarProgreso,gano,mostrarResultado
 
 
 ## Test de Funcionalidad Arriesgar Palabra

@@ -40,3 +40,11 @@ def mostrarProgreso(palabra):
         else:
             progreso.append("_")
     return " ".join(progreso)
+
+def gano(palabra):
+    return all(letra in letras_acertadas for letra in palabra)
+
+
+def mostrarResultado(palabra):
+    if gano(palabra):
+        return "¡Ganaste!"
