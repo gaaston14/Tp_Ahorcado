@@ -90,3 +90,15 @@ def test_gano_y_muestra_que_gane():
 
     assert gano("python") == True
     assert mostrarResultado("python") == "¡Ganaste!"
+
+def test_pierdo_y_muestra_que_perdi():
+    # Reiniciamos el estado
+    letras_acertadas.clear()
+    letras_intentadas.clear()
+
+    # Simulamos que el jugador perdió todas las vidas
+    vidas_restantes = 0
+
+    # Aún no implementamos perdio() ni mostrarResultado para derrota
+    assert perdio(vidas_restantes) == True
+    assert mostrarResultado("python", vidas_restantes) == "¡Perdiste!"
