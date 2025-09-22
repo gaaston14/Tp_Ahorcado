@@ -31,3 +31,12 @@ def descuentaVida(letra):
         return -1
     else:
         return False
+    
+def mostrarProgreso(palabra):
+    progreso = []
+    for letra in palabra:
+        if letra in letras_acertadas:
+            progreso.append(letra)
+        else:
+            progreso.append("_")
+    return " ".join(progreso)
