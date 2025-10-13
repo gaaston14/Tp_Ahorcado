@@ -54,3 +54,34 @@ def mostrarResultado(palabra, vidas_restantes=None):
         return "¡Ganaste!"
     if vidas_restantes is not None and perdio(vidas_restantes):
         return "¡Perdiste!"
+
+def jugar():
+    """Función principal que orquesta el juego del Ahorcado."""
+    palabra_secreta = "python"
+    vidas = 6 # Definamos una cantidad de vidas inicial
+
+    print("¡Bienvenido al juego del Ahorcado!")
+
+    while True:
+        # Mostramos el estado actual del juego
+        print(f"Palabra: {mostrarProgreso(palabra_secreta)}")
+        print(f"Vidas restantes: {vidas}")
+
+        # Pedimos al usuario que ingrese una letra o palabra
+        entrada = input("Ingresa una letra o arriesga la palabra: ").lower()
+
+        if len(entrada) > 1: # El usuario arriesga la palabra completa
+            if arriesgoPalabra(entrada):
+                letras_acertadas.update(set(palabra_secreta)) # Rellenamos las letras acertadas
+                print(mostrarResultado(palabra_secreta))
+                break
+        # Aquí irá la lógica para arriesgar letras (siguiente paso)
+        
+        # Condición de salida por si el test se cicla (temporal)
+        if entrada == 'salir':
+            break
+
+# Punto de entrada para ejecutar el juego desde la consola
+if __name__ == "__main__":
+    jugar()
+ 

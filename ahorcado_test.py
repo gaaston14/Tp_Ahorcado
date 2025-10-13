@@ -1,7 +1,7 @@
 import pytest
 import io
 from unittest.mock import patch
-from ahorcado import arriesgoPalabra,arriesgoLetra, descuentaVida,letras_acertadas, letras_intentadas, mostrarProgreso,gano,mostrarResultado,perdio
+from ahorcado import jugar, arriesgoPalabra,arriesgoLetra, descuentaVida,letras_acertadas, letras_intentadas, mostrarProgreso,gano,mostrarResultado,perdio
 
 
 ## Test de Funcionalidad Arriesgar Palabra
