@@ -60,7 +60,6 @@ def jugar():
     palabra_secreta = "python"
     vidas = 6
 
-    # Limpiamos los sets por si se juega varias veces
     letras_intentadas.clear()
     letras_acertadas.clear()
 
@@ -71,24 +70,27 @@ def jugar():
         print(f"Vidas restantes: {vidas}")
         print(f"Letras intentadas: {' '.join(sorted(letras_intentadas))}")
 
-
         entrada = input("Ingresa una letra o arriesga la palabra: ").lower()
 
+        if entrada == 'salir': # Mantenemos la salida para los tests
+            break
+
         if len(entrada) > 1: # Arriesga palabra
-            acerto = arriesgoPalabra(entrada)
-            if acerto:
+            if arriesgoPalabra(entrada):
                 letras_acertadas.update(set(palabra_secreta))
                 print(f"¡Correcto! La palabra era '{palabra_secreta}'.")
                 print(mostrarResultado(palabra_secreta))
                 break
             else:
                 print(f"'{entrada}' no es la palabra. ¡Pierdes una vida!")
-                vidas += descuentaVida(False) # Usamos la función que ya tenías
-
-        # Aquí irá la lógica para arriesgar letras
-
-        if entrada == 'salir': # Mantenemos la salida para los tests
-            break
+                vidas += descuentaVida(False)
+        
+        elif len(entrada) == 1: # Arriesga una letra (NUEVO BLOQUE)
+            resultado_letra = arriesgoLetra(entrada)
+            if resultado_letra == True:
+                print(f"¡Bien! La letra '{entrada}' está en la palabra.")
+            elif resultado_letra == "repetida":
+                print(f"Ya habías intentado la letra '{entrada}'. Intenta con otra.")
 
 # Punto de entrada para ejecutar el juego desde la consola
 if __name__ == "__main__":
