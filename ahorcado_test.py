@@ -113,3 +113,11 @@ def test_juego_inicia_y_se_gana_con_palabra_correcta():
             jugar()
             # Al final, el output debería contener el mensaje de victoria.
             assert "¡Ganaste!" in fake_out.getvalue()
+
+def test_arriesga_palabra_incorrecta_y_pierde_vida():
+    # Simulamos que el usuario ingresa "javascript" y luego sale.
+    with patch('builtins.input', side_effect=['javascript', 'salir']):
+        with patch('sys.stdout', new=io.StringIO()) as fake_out:
+            jugar()
+            # Verificamos que el número de vidas se haya reducido a 5.
+            assert "Vidas restantes: 5" in fake_out.getvalue()            
