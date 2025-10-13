@@ -58,27 +58,36 @@ def mostrarResultado(palabra, vidas_restantes=None):
 def jugar():
     """Función principal que orquesta el juego del Ahorcado."""
     palabra_secreta = "python"
-    vidas = 6 # Definamos una cantidad de vidas inicial
+    vidas = 6
+
+    # Limpiamos los sets por si se juega varias veces
+    letras_intentadas.clear()
+    letras_acertadas.clear()
 
     print("¡Bienvenido al juego del Ahorcado!")
 
     while True:
-        # Mostramos el estado actual del juego
-        print(f"Palabra: {mostrarProgreso(palabra_secreta)}")
+        print(f"\nPalabra: {mostrarProgreso(palabra_secreta)}")
         print(f"Vidas restantes: {vidas}")
+        print(f"Letras intentadas: {' '.join(sorted(letras_intentadas))}")
 
-        # Pedimos al usuario que ingrese una letra o palabra
+
         entrada = input("Ingresa una letra o arriesga la palabra: ").lower()
 
-        if len(entrada) > 1: # El usuario arriesga la palabra completa
-            if arriesgoPalabra(entrada):
-                letras_acertadas.update(set(palabra_secreta)) # Rellenamos las letras acertadas
+        if len(entrada) > 1: # Arriesga palabra
+            acerto = arriesgoPalabra(entrada)
+            if acerto:
+                letras_acertadas.update(set(palabra_secreta))
+                print(f"¡Correcto! La palabra era '{palabra_secreta}'.")
                 print(mostrarResultado(palabra_secreta))
                 break
-        # Aquí irá la lógica para arriesgar letras (siguiente paso)
-        
-        # Condición de salida por si el test se cicla (temporal)
-        if entrada == 'salir':
+            else:
+                print(f"'{entrada}' no es la palabra. ¡Pierdes una vida!")
+                vidas += descuentaVida(False) # Usamos la función que ya tenías
+
+        # Aquí irá la lógica para arriesgar letras
+
+        if entrada == 'salir': # Mantenemos la salida para los tests
             break
 
 # Punto de entrada para ejecutar el juego desde la consola
