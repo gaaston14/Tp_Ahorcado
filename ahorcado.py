@@ -85,13 +85,16 @@ def jugar():
                 print(f"'{entrada}' no es la palabra. ¡Pierdes una vida!")
                 vidas += descuentaVida(False)
         
-        elif len(entrada) == 1: # Arriesga una letra (NUEVO BLOQUE)
+        elif len(entrada) == 1: # Arriesga una letra
             resultado_letra = arriesgoLetra(entrada)
             if resultado_letra == True:
                 print(f"¡Bien! La letra '{entrada}' está en la palabra.")
             elif resultado_letra == "repetida":
                 print(f"Ya habías intentado la letra '{entrada}'. Intenta con otra.")
-
+            else: # La letra es incorrecta (NUEVO)
+                print(f"La letra '{entrada}' no está. ¡Pierdes una vida!")
+                vidas += descuentaVida(False)
+                
 # Punto de entrada para ejecutar el juego desde la consola
 if __name__ == "__main__":
     jugar()
