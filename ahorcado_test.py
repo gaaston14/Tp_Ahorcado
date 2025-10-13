@@ -1,5 +1,7 @@
 import pytest
-from ahorcado import arriesgoPalabra,arriesgoLetra,descuentaVida,letras_acertadas, letras_intentadas, mostrarProgreso,gano,mostrarResultado,perdio
+import io
+from unittest.mock import patch
+from ahorcado import arriesgoPalabra,arriesgoLetra, descuentaVida,letras_acertadas, letras_intentadas, mostrarProgreso,gano,mostrarResultado,perdio
 
 
 ## Test de Funcionalidad Arriesgar Palabra
@@ -102,3 +104,12 @@ def test_pierdo_y_muestra_que_perdi():
     # Aún no implementamos perdio() ni mostrarResultado para derrota
     assert perdio(vidas_restantes) == True
     assert mostrarResultado("python", vidas_restantes) == "¡Perdiste!"
+
+def test_juego_inicia_y_se_gana_con_palabra_correcta():
+    # Simulamos que el usuario ingresa la palabra correcta "python" y luego sale.
+    with patch('builtins.input', side_effect=['python', 'salir']):
+        # Usamos patch para capturar la salida de print()
+        with patch('sys.stdout', new=io.StringIO()) as fake_out:
+            jugar()
+            # Al final, el output debería contener el mensaje de victoria.
+            assert "¡Ganaste!" in fake_out.getvalue()
