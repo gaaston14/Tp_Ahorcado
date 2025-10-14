@@ -125,13 +125,12 @@ def test_arriesga_palabra_incorrecta_y_pierde_vida():
 
 def test_juego_al_ingresar_letra_correcta_muestra_progreso():
     # Simulamos que el usuario ingresa 'p' y luego 'salir' para terminar.
-    with patch('builtins.input', side_effect=['p', 'salir']):
-        with patch('sys.stdout', new=io.StringIO()) as fake_out:
-            jugar()
-            # Verificamos que el progreso se muestra correctamente en la siguiente vuelta.
-            assert "Palabra: p _ _ _ _ _" in fake_out.getvalue()
-            # Verificamos que las vidas NO se descuentan.
-            assert "Vidas restantes: 6" in fake_out.getvalue()
+    with patch('random.choice', return_value='python'):
+        with patch('builtins.input', side_effect=['p', 'salir']):
+            with patch('sys.stdout', new=io.StringIO()) as fake_out:
+                jugar()
+                assert "Palabra: p _ _ _ _ _" in fake_out.getvalue()
+                assert "Vidas restantes: 6" in fake_out.getvalue()
 
 def test_juego_al_ingresar_letra_incorrecta_pierde_vida():
     # Simulamos que el usuario ingresa 'z' y luego 'salir'.
