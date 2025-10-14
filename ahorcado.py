@@ -1,5 +1,15 @@
+import random
+random.seed(0)
+
 letras_intentadas = set()
 letras_acertadas = set()
+BANCO_PALABRAS = [
+    "python",
+    "camilo",
+    "crossfit",
+    "pandas"
+]
+vidas = 6
 
 def perdio(vidas_restantes):
     return vidas_restantes <= 0
@@ -9,18 +19,18 @@ def gano(palabra):
 
 
 
-def arriesgoPalabra(palabra):
-        if( palabra == "python"):
+def arriesgoPalabra(palabra, palabra_secreta="python"):
+        if( palabra == palabra_secreta.lower()):
             return True
         else:
             return False
 
-def arriesgoLetra(letra):
+def arriesgoLetra(letra, palabra_secreta="python"):
     global letras_intentadas, letras_acertadas
 
     letra = letra.lower()
 
-    # si ya se intentó antes
+    # si ya se intentó antes, avisamos y no modificamos nada
     if letra in letras_intentadas:
         return "repetida"
 
@@ -28,17 +38,17 @@ def arriesgoLetra(letra):
     letras_intentadas.add(letra)
 
     # si la letra está en la palabra
-    if letra in "python":
+    if letra in palabra_secreta:
         letras_acertadas.add(letra)
         return True
     else:
         return False
 
 def descuentaVida(letra):
-    if ( letra == False):
-        return -1
-    else:
-        return False
+    global vidas
+    if letra == False and vidas > 0:
+        vidas -= 1
+    return vidas
     
 def mostrarProgreso(palabra):
     progreso = []
@@ -57,7 +67,8 @@ def mostrarResultado(palabra, vidas_restantes=None):
 
 def jugar():
     """Función principal que orquesta el juego del Ahorcado."""
-    palabra_secreta = "python"
+    global vidas
+    palabra_secreta = random.choice(BANCO_PALABRAS)
     vidas = 6
 
     letras_intentadas.clear()
@@ -72,29 +83,46 @@ def jugar():
 
         entrada = input("Ingresa una letra o arriesga la palabra: ").lower()
 
-        if entrada == 'salir': # Mantenemos la salida para los tests
+        if entrada == 'salir':  # mantener para los tests
             break
 
-        if len(entrada) > 1: # Arriesga palabra
-            if arriesgoPalabra(entrada):
+        # --- Arriesga palabra completa ---
+        if len(entrada) > 1:
+            if arriesgoPalabra(entrada, palabra_secreta):
                 letras_acertadas.update(set(palabra_secreta))
                 print(f"¡Correcto! La palabra era '{palabra_secreta}'.")
                 print(mostrarResultado(palabra_secreta))
                 break
             else:
                 print(f"'{entrada}' no es la palabra. ¡Pierdes una vida!")
-                vidas += descuentaVida(False)
-        
-        elif len(entrada) == 1: # Arriesga una letra
-            resultado_letra = arriesgoLetra(entrada)
+                vidas = descuentaVida(False)
+
+                if vidas <= 0:
+                    print("¡Perdiste! Te quedaste sin vidas.")
+                    print(f"La palabra era: {palabra_secreta}")
+                    break
+
+        # --- Arriesga una letra ---
+        elif len(entrada) == 1:
+            resultado_letra = arriesgoLetra(entrada, palabra_secreta)
+
             if resultado_letra == True:
                 print(f"¡Bien! La letra '{entrada}' está en la palabra.")
+
             elif resultado_letra == "repetida":
-                print(f"Ya habías intentado la letra '{entrada}'. Intenta con otra.")
-            else: # La letra es incorrecta (NUEVO)
+                print(f"Ya habías intentado la letra '{entrada}'. No pierdes una vida. Intenta con otra.")
+
+            else:
                 print(f"La letra '{entrada}' no está. ¡Pierdes una vida!")
-                vidas += descuentaVida(False)
-                
+                vidas = descuentaVida(False)
+
+                if vidas <= 0:
+                    print("¡Perdiste! Te quedaste sin vidas.")
+                    print(f"La palabra era: {palabra_secreta}")
+                    break
+
+
+
 # Punto de entrada para ejecutar el juego desde la consola
 if __name__ == "__main__":
     jugar()
