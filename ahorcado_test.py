@@ -1,4 +1,4 @@
-import pytest
+import pytest,ahorcado
 import io
 from unittest.mock import patch
 from ahorcado import jugar, arriesgoPalabra,arriesgoLetra, descuentaVida,letras_acertadas, letras_intentadas, mostrarProgreso,gano,mostrarResultado,perdio
@@ -39,14 +39,17 @@ def test_arriesgo_letra_repetida():
 
 ## Test de Funcionalidad de Vidas
 
-def test_no_acierto_descuenta_vida():
-    vida = descuentaVida(arriesgoLetra("z"))
-    assert vida == -1
+def test_no_acierto_descuenta_vida():   
+    ahorcado.vidas = 6  # reiniciamos
+    vida = descuentaVida(False)
+    assert vida == 5  # ahora debería quedar en 5, no -1
+
 
 def test_acierto_no_descuenta_vida():
-    acierto = arriesgoLetra("p")  
+    ahorcado.vidas = 6
+    acierto = True
     vida = descuentaVida(acierto)
-    assert vida == 0
+    assert vida == 6  # no descuenta vidas
 
 ## Test de Funcionalidad Mostrar Progreso de la Palabra
 
@@ -106,13 +109,11 @@ def test_pierdo_y_muestra_que_perdi():
     assert mostrarResultado("python", vidas_restantes) == "¡Perdiste!"
 
 def test_juego_inicia_y_se_gana_con_palabra_correcta():
-    # Simulamos que el usuario ingresa la palabra correcta "python" y luego sale.
-    with patch('builtins.input', side_effect=['python', 'salir']):
-        # Usamos patch para capturar la salida de print()
-        with patch('sys.stdout', new=io.StringIO()) as fake_out:
-            jugar()
-            # Al final, el output debería contener el mensaje de victoria.
-            assert "¡Ganaste!" in fake_out.getvalue()
+    with patch('random.choice', return_value='python'):  # fuerza la palabra
+        with patch('builtins.input', side_effect=['python', 'salir']):
+            with patch('sys.stdout', new=io.StringIO()) as fake_out:
+                jugar()
+                assert "¡Ganaste!" in fake_out.getvalue()
 
 def test_arriesga_palabra_incorrecta_y_pierde_vida():
     # Simulamos que el usuario ingresa "javascript" y luego sale.
@@ -131,7 +132,7 @@ def test_juego_al_ingresar_letra_correcta_muestra_progreso():
             assert "Palabra: p _ _ _ _ _" in fake_out.getvalue()
             # Verificamos que las vidas NO se descuentan.
             assert "Vidas restantes: 6" in fake_out.getvalue()
-            
+
 def test_juego_al_ingresar_letra_incorrecta_pierde_vida():
     # Simulamos que el usuario ingresa 'z' y luego 'salir'.
     with patch('builtins.input', side_effect=['z', 'salir']):
