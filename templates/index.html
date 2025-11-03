@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego del Ahorcado</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* ... (Todo el CSS de antes) ... */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #f4f7f6;
+            color: #333;
+            overflow: hidden;
+        }
+        .game-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            flex-wrap: nowrap;
+        }
+        .dibujo-container {
+            flex-basis: 50%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .dibujo-container img {
+            max-width: 90%;
+            max-height: 90vh;
+            height: auto;
+        }
+        .info-container {
+            flex-basis: 50%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            box-sizing: border-box;
+            border-left: 2px solid #dcdcdc;
+            overflow-y: auto;
+        }
+        h1 { color: #111; text-align: center; margin-bottom: 20px;}
+        .progreso { font-size: 2.5em; letter-spacing: 0.2em; margin: 20px 0; font-family: "Courier New", monospace; color: #000; font-weight: bold; text-align: center; }
+        .vidas { font-size: 1.2em; color: #c9302c; font-weight: 500;}
+        .intentadas { color: #777; margin-top: 15px; min-height: 2.5em; text-align: center; width: 100%;}
+        
+        .mensaje { font-size: 1.2em; margin: 20px 0; padding: 15px; border-radius: 8px; font-weight: bold; width: 100%; max-width: 400px; box-sizing: border-box;}
+        .mensaje.ganador { background: #dff0d8; color: #3c763d; border: 1px solid #3c763d; }
+        .mensaje.perdedor { background: #f2dede; color: #a94442; border: 1px solid #a94442; }
+        .mensaje.neutral { background: #eef; color: #31708f; border: 1px solid #31708f;}
+
+        .resultado-final { margin-top: 20px; font-size: 1.5em; }
+        
+        form { margin-top: 20px; text-align: center; }
+        input[type="text"] { font-size: 1.2em; padding: 10px; width: 200px; border: 1px solid #ccc; border-radius: 5px; }
+        button { font-size: 1.2em; padding: 11px 20px; cursor: pointer; background: #0275d8; color: white; border: none; border-radius: 5px; margin-left: 5px; }
+        a.boton-nuevo { display: inline-block; text-decoration: none; font-size: 1.2em; padding: 12px 25px; margin-top: 20px; background: #5cb85c; color: white; border-radius: 5px; font-weight: bold; }
+    
+        /* --- Responsive para Móviles --- */
+        @media (max-width: 768px) {
+            html, body { height: auto; overflow: auto; }
+            .game-container { flex-direction: column; height: auto; }
+            .dibujo-container { height: auto; padding: 10px; order: 1; }
+            .info-container { height: auto; border-left: none; border-top: 2px solid #dcdcdc; padding: 20px; order: 2; }
+            .dibujo-container img { max-width: 70%; max-height: 40vh; }
+            h1 { font-size: 1.8em; }
+            .progreso { font-size: 1.8em; }
+            input[type="text"] { width: 150px; }
+        }
+
+        /* --- CSS para el Pop-up de resultado --- */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-content {
+            background: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            max-width: 90%;
+            width: 450px;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        .overlay.active .popup-content {
+            transform: scale(1);
+        }
+
+        .popup-content h2 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        .popup-content p {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+        }
+
+        /* --- ¡AQUÍ ESTÁ LA CORRECCIÓN! --- */
+        .popup-content .restart-button {
+            display: inline-block;
+            text-decoration: none;
+            font-size: 1.5em;
+            padding: 15px 30px;
+            background: #0275d8;
+            color: white;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background 0.2s ease;
+            
+            /* Estas 2 líneas arreglan el bug */
+            position: relative;
+            z-index: 2;
+        }
+        /* --- FIN DE LA CORRECCIÓN --- */
+
+        .popup-content .restart-button:hover {
+            background: #025aa5;
+        }
+
+        /* Estilos específicos para GANAR */
+        .popup-content.win {
+            border: 5px solid #5cb85c;
+            background: linear-gradient(135deg, #dff0d8, #e6ffe6);
+        }
+        .popup-content.win h2 {
+            color: #3c763d;
+        }
+
+        /* Estilos específicos para PERDER */
+        .popup-content.lose {
+            border: 5px solid #d9534f;
+            background: linear-gradient(135deg, #f2dede, #ffe6e6);
+            position: relative;
+            overflow: hidden;
+        }
+        .popup-content.lose h2 {
+            color: #a94442;
+            z-index: 2; /* Encima del fuego */
+            position: relative;
+        }
+        .popup-content.lose p {
+            color: #a94442;
+            z-index: 2; /* Encima del fuego */
+            position: relative;
+        }
+
+        /* GIF de fuego para perder */
+        .fire-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.5;
+            z-index: 1; /* Detrás del texto y del botón */
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+    
+        <div class="dibujo-container">
+            <img id="ahorcado-img" src="/static/images/ahorcado_{{ num_errores }}.png" alt="Progreso del ahorcado">
+        </div>
+
+        <div class="info-container">
+            
+            <h1>Juego del Ahorcado</h1>
+
+            <div class="progreso">{{ progreso }}</div>
+            <div class="vidas"><strong>Vidas restantes: {{ vidas }}</strong></div>
+
+            {% if mensaje and not juego_terminado %}
+                <div class="mensaje neutral">{{ mensaje }}</div>
+            {% endif %}
+
+            {% if not juego_terminado %}
+                <form action="/jugar" method="POST">
+                    <input type="text" name="entrada" maxlength="20" placeholder="Letra o palabra" autofocus autocomplete="off">
+                    <button type="submit">Arriesgar</button>
+                </form>
+                <div class="intentadas"><strong>Intentadas:</strong> {{ intentadas }}</div>
+            {% else %}
+                {# El resultado se muestra en el pop-up #}
+            {% endif %}
+
+            <a href="/reiniciar" class="boton-nuevo" id="restart-button-main" style="{% if juego_terminado %} display: none; {% endif %}">Juego Nuevo</a>
+        
+        </div>
+    </div>
+
+    {# --- El Pop-up de Resultado --- #}
+    <div id="resultado-overlay" class="overlay">
+        <div id="popup-content" class="popup-content">
+            {# El JS inyecta el contenido aquí #}
+        </div>
+    </div>
+    {# --- FIN Pop-up --- #}
+
+    <script>
+        const mensajeFlask = {{ mensaje | default('') | tojson }};
+        const juegoTerminado = {{ juego_terminado | tojson }};
+        const palabraSecreta = {{ palabra_secreta | default('') | tojson }};
+        const numErrores = {{ num_errores | tojson }};
+
+        const overlay = document.getElementById('resultado-overlay');
+        const popupContent = document.getElementById('popup-content');
+        const mainRestartButton = document.getElementById('restart-button-main');
+        const ahorcadoImg = document.getElementById('ahorcado-img');
+
+        // Función para disparar el confeti
+        function fireConfetti() {
+            confetti({
+                particleCount: 200,
+                spread: 120,
+                origin: { y: 0.6 }
+            });
+            setTimeout(() => {
+                confetti({
+                    particleCount: 150,
+                    spread: 90,
+                    origin: { y: 0.7 }
+                });
+            }, 500);
+        }
+
+        // Función para mostrar el pop-up
+        function showResultPopup(isWin) {
+            popupContent.innerHTML = '';
+            popupContent.className = 'popup-content'; // Resetear clases
+
+            if (isWin) {
+                popupContent.classList.add('win');
+                popupContent.innerHTML = `
+                    <h2>¡GANASTE!</h2>
+                    <p>¡Felicidades! Adivinaste la palabra:</p>
+                    <p style="font-size: 2em; font-weight: bold;">${palabraSecreta.toUpperCase()}</p>
+                    <a href="/reiniciar" class="restart-button">Jugar de Nuevo</a>
+                `;
+                fireConfetti(); // Lanzar confeti al ganar
+            } else {
+                popupContent.classList.add('lose');
+                popupContent.innerHTML = `
+                    <img src="/static/images/fire.gif" alt="Fuego" class="fire-background">
+                    <h2 style="color: #a94442;">¡PERDISTE!</h2>
+                    <p style="font-size: 1.5em; position: relative; z-index: 2;">La palabra era:</p>
+                    <p style="font-size: 2em; font-weight: bold; position: relative; z-index: 2; color: #a94442;">${palabraSecreta.toUpperCase()}</p>
+                    <a href="/reiniciar" class="restart-button">Intentar de Nuevo</a>
+                `;
+            }
+            
+            overlay.classList.add('active');
+            if (mainRestartButton) {
+                mainRestartButton.style.display = 'none';
+            }
+            ahorcadoImg.src = `/static/images/ahorcado_${numErrores}.png`;
+        }
+
+        // Ejecutar al cargar la página si el juego ha terminado
+        if (juegoTerminado) {
+            if (mensajeFlask.includes("¡Ganaste!")) {
+                showResultPopup(true);
+            } else if (mensajeFlask.includes("¡PerdistE!") || numErrores === 6) { // Corregido por si acaso
+                showResultPopup(false);
+            }
+        }
+    </script>
+</body>
+</html>

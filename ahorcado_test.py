@@ -1,141 +1,96 @@
-import pytest,ahorcado
-import io
-from unittest.mock import patch
-from ahorcado import jugar, arriesgoPalabra,arriesgoLetra, descuentaVida,letras_acertadas, letras_intentadas, mostrarProgreso,gano,mostrarResultado,perdio
-
+# ahorcado_test.py (Actualizado)
+import pytest
+# Importamos el módulo con la nueva lógica, ahora lo llamamos 'logica_juego'
+import ahorcado as logica_juego 
 
 ## Test de Funcionalidad Arriesgar Palabra
 
 def test_arriesgo_palabra_y_acierto():
-    palabra = arriesgoPalabra("python")
+    # Ahora pasamos la palabra secreta como argumento
+    palabra = logica_juego.arriesgoPalabra("python", "python")
     assert palabra == True
     
-def test_arriesgo_palabra_y__no_acierto():
-    palabra = arriesgoPalabra("javascript")
+def test_arriesgo_palabra_y_no_acierto():
+    palabra = logica_juego.arriesgoPalabra("javascript", "python")
     assert palabra == False
-
 
 ## Test de Funcionalidad Arriesgar Letra
 
 def test_arriesgo_letra_y_acierto():
-    letra = arriesgoLetra("y")
-    assert letra == True
+    # Debemos simular el estado del juego: sets vacíos
+    intentadas = set()
+    acertadas = set()
+    letra = logica_juego.arriesgoLetra("y", "python", intentadas, acertadas)
+    
+    assert letra == "acertada"
+    assert "y" in acertadas
+    assert "y" in intentadas
 
 def test_arriesgo_letra_y_no_acierto():
-    letra = arriesgoLetra("z")
-    assert letra == False
+    intentadas = set()
+    acertadas = set()
+    letra = logica_juego.arriesgoLetra("z", "python", intentadas, acertadas)
+    
+    assert letra == "fallada"
+    assert "z" not in acertadas
+    assert "z" in intentadas
 
 def test_arriesgo_letra_repetida():
-    letras_acertadas.clear()
-    letras_intentadas.clear()
-
-    # Primer intento con "p"
-    resultado1 = arriesgoLetra("p")
-    assert resultado1 == True
-
-    # Segundo intento con la misma "p"
-    resultado2 = arriesgoLetra("p")
-    assert resultado2 == "repetida"  
+    # Simulamos que 'p' ya se había intentado
+    intentadas = {"p"}
+    acertadas = {"p"}
+    
+    resultado = logica_juego.arriesgoLetra("p", "python", intentadas, acertadas)
+    assert resultado == "repetida"
 
 ## Test de Funcionalidad de Vidas
 
 def test_no_acierto_descuenta_vida():   
-    ahorcado.vidas = 6  # reiniciamos
-    vida = descuentaVida(False)
-    assert vida == 5  # ahora debería quedar en 5, no -1
-
+    vidas_actuales = 6
+    # La nueva función recibe si el intento fue FALSO (no acertó)
+    vida_nueva = logica_juego.descuentaVida(False, vidas_actuales)
+    assert vida_nueva == 5
 
 def test_acierto_no_descuenta_vida():
-    ahorcado.vidas = 6
-    acierto = True
-    vida = descuentaVida(acierto)
-    assert vida == 6  # no descuenta vidas
+    vidas_actuales = 6
+     # La nueva función recibe si el intento fue VERDADERO (acertó)
+    vida_nueva = logica_juego.descuentaVida(True, vidas_actuales)
+    assert vida_nueva == 6
 
 ## Test de Funcionalidad Mostrar Progreso de la Palabra
 
 def test_arriesgo_letra_correcta_y_la_muestra():
-    # Reiniciamos el estado
-    letras_acertadas.clear()
-    letras_intentadas.clear()
-
-    # Intentamos la letra "p"
-    arriesgoLetra("p")
-
-    # Pedimos el progreso
-    progreso = mostrarProgreso("python")
-
+    # Simulamos que 'p' es la única letra acertada
+    acertadas = {"p"}
+    progreso = logica_juego.mostrarProgreso("python", acertadas)
     assert progreso == "p _ _ _ _ _"
 
 def test_arriesgo_letra_incorrecta_y_no_la_muestra():
-    # Reiniciamos el estado
-    letras_acertadas.clear()
-    letras_intentadas.clear()
-
-    # Intentamos una letra que no está en "python"
-    arriesgoLetra("z")
-
-    # Pedimos el progreso
-    progreso = mostrarProgreso("python")
-
+    acertadas = set() # Ninguna acertada
+    progreso = logica_juego.mostrarProgreso("python", acertadas)
     assert progreso == "_ _ _ _ _ _"
 
 ## Test Ganar o Perder el Juego
 
 def test_gano_y_muestra_que_gane():
-    # Reiniciamos el estado
-    letras_acertadas.clear()
-    letras_intentadas.clear()
-
-    # Simulamos haber acertado todas las letras de la palabra "python"
-    for ch in set("python"):
-        letras_acertadas.add(ch)
-
-    # El progreso debe mostrar la palabra completa
-    assert mostrarProgreso("python") == "p y t h o n"
-
-    assert gano("python") == True
-    assert mostrarResultado("python") == "¡Ganaste!"
+    # Simulamos haber acertado todas las letras
+    acertadas = set("python")
+    vidas = 3 # No importa cuántas vidas, ya ganó
+    
+    assert logica_juego.gano("python", acertadas) == True
+    assert logica_juego.mostrarResultado("python", vidas, acertadas) == "¡Ganaste!"
 
 def test_pierdo_y_muestra_que_perdi():
-    # Reiniciamos el estado
-    letras_acertadas.clear()
-    letras_intentadas.clear()
+    acertadas = {"p", "y"} # No completó
+    vidas_restantes = 0 # Pero se quedó sin vidas
+    
+    assert logica_juego.perdio(vidas_restantes) == True
+    assert logica_juego.mostrarResultado("python", vidas_restantes, acertadas) == "¡Perdiste!"
 
-    # Simulamos que el jugador perdió todas las vidas
-    vidas_restantes = 0
-
-    # Aún no implementamos perdio() ni mostrarResultado para derrota
-    assert perdio(vidas_restantes) == True
-    assert mostrarResultado("python", vidas_restantes) == "¡Perdiste!"
-
-def test_juego_inicia_y_se_gana_con_palabra_correcta():
-    with patch('random.choice', return_value='python'):  # fuerza la palabra
-        with patch('builtins.input', side_effect=['python', 'salir']):
-            with patch('sys.stdout', new=io.StringIO()) as fake_out:
-                jugar()
-                assert "¡Ganaste!" in fake_out.getvalue()
-
-def test_arriesga_palabra_incorrecta_y_pierde_vida():
-    # Simulamos que el usuario ingresa "javascript" y luego sale.
-    with patch('builtins.input', side_effect=['javascript', 'salir']):
-        with patch('sys.stdout', new=io.StringIO()) as fake_out:
-            jugar()
-            # Verificamos que el número de vidas se haya reducido a 5.
-            assert "Vidas restantes: 5" in fake_out.getvalue()    
-
-def test_juego_al_ingresar_letra_correcta_muestra_progreso():
-    # Simulamos que el usuario ingresa 'p' y luego 'salir' para terminar.
-    with patch('random.choice', return_value='python'):
-        with patch('builtins.input', side_effect=['p', 'salir']):
-            with patch('sys.stdout', new=io.StringIO()) as fake_out:
-                jugar()
-                assert "Palabra: p _ _ _ _ _" in fake_out.getvalue()
-                assert "Vidas restantes: 6" in fake_out.getvalue()
-
-def test_juego_al_ingresar_letra_incorrecta_pierde_vida():
-    # Simulamos que el usuario ingresa 'z' y luego 'salir'.
-    with patch('builtins.input', side_effect=['z', 'salir']):
-        with patch('sys.stdout', new=io.StringIO()) as fake_out:
-            jugar()
-            # Verificamos que se descuenta una vida.
-            assert "Vidas restantes: 5" in fake_out.getvalue()
+# ----------------------------------------------------------------
+# NOTA: Los tests que simulaban 'jugar()' (con 'patch')
+# ya no aplican, porque 'jugar()' fue eliminado de 'ahorcado.py'.
+# Esa lógica ahora vive en 'app.py' y se testea de otra forma
+# (con un cliente de prueba de Flask), lo cual es más avanzado.
+# Por ahora, nos aseguramos de que la LÓGICA base funciona.
+# ----------------------------------------------------------------
