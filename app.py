@@ -8,6 +8,10 @@ app = Flask(__name__)
 # Una 'secret_key' es necesaria para que las sesiones (memoria) funcionen
 app.secret_key = 'tu_llave_secreta_muy_secreta_aqui'
 
+@app.before_request
+def make_session_non_permanent():
+    session.permanent = False
+
 @app.route('/')
 def index():
     """Muestra la página principal del juego."""
