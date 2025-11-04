@@ -22,20 +22,39 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        # 1. Instala Flask y otras dependencias de la app
-        pip install -r requirements.txt
-        # 2. Instala las dependencias de testing
-        pip install pytest pytest-cov
+        # Instala TODAS las dependencias, incluidas las de test
+        pip install -r requirements-test.txt
+        
+    - name: Install Google Chrome
+      run: |
+        # Selenium necesita un navegador real para correr en el CI
+        sudo apt-get update
+        sudo apt-get install -y google-chrome-stable
 
     - name: Verify syntax (build step)
       run: |
-        # 3. Ahora verificamos app.py también
         python -m py_compile app.py
         python -m py_compile ahorcado.py
         python -m py_compile ahorcado_test.py
 
-    - name: Run logic tests with coverage
+    - name: Run logic tests with coverage (Unit Tests)
       run: |
-        # 4. Este paso sigue siendo el mismo y es correcto
-        #    Prueba nuestra lógica pura en ahorcado.py
+        # Ejecuta las pruebas unitarias
         python -m pytest ahorcado_test.py --cov=ahorcado --cov-report=term-missing
+
+    # --- Pasos para Pruebas de Aceptación (AT) ---
+
+    - name: Run Flask App in Background
+      env:
+        FLASK_APP: app.py
+        FLASK_ENV: development
+      run: |
+        # Inicia la app en segundo plano para que Selenium pueda probarla
+        nohup python -m flask run &
+        # Damos 3 segundos para que el servidor inicie
+        sleep 3
+
+    - name: Run Acceptance Tests (Behave + Selenium)
+      run: |
+        # Ejecuta las pruebas de Behave
+        behave

@@ -1,0 +1,7 @@
+Flask>=2.0
+pytest
+pytest-cov
+behave
+selenium
+webdriver-manager
+requests

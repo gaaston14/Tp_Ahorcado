@@ -1,6 +1,6 @@
 # app.py
 import random
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, current_app
 # Importamos las funciones *modificadas* de nuestro archivo ahorcado
 import ahorcado as logica_juego
 
@@ -132,6 +132,28 @@ def reiniciar():
     iniciar_juego()
     return redirect(url_for('index'))
 
+# --- ¡NUEVO! RUTA PARA APAGAR EL SERVIDOR ---
+def shutdown_server():
+    """Función para apagar el servidor de Werkzeug."""
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        print('Servidor no es Werkzeug, no se puede apagar programáticamente.')
+        return
+    func()
+
+@app.route('/shutdown', methods=['GET'])
+def shutdown():
+    """Ruta para apagar el servidor (solo para tests)."""
+    # Verificamos que estemos en un entorno de testing
+    if 'testing' in current_app.config or current_app.config['DEBUG']:
+        print("Recibida señal de apagado...")
+        shutdown_server()
+        return 'Servidor apagándose...'
+    else:
+        return 'No autorizado.', 404
+# --- FIN DE LO NUEVO ---
+
 if __name__ == '__main__':
     # Esto permite ejecutarlo localmente con 'python app.py'
+    # PERO 'behave' lo iniciará usando app.run() desde el environment
     app.run(debug=True)
