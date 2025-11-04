@@ -29,6 +29,20 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y google-chrome-stable
 
+    # --- ¡NUEVO PASO AÑADIDO! ---
+    - name: Lint with Flake8
+      run: |
+        # 1. Revisa errores críticos (sintaxis, variables no definidas)
+        #    Si encuentra uno de estos, falla el build.
+        echo "Chequeando errores críticos con Flake8..."
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        
+        # 2. Revisa el estilo (líneas largas, complejidad)
+        #    --exit-zero significa que reportará los errores,
+        #    pero NO fallará el build por errores de estilo.
+        echo "Chequeando 'estilo' (linting) con Flake8..."
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
     - name: Verify syntax (build step)
       run: |
         python -m py_compile app.py
@@ -37,10 +51,8 @@ jobs:
 
     - name: Run logic tests with coverage (Unit Tests)
       run: |
-        # ¡CAMBIO AQUÍ! Generamos un reporte XML
         python -m pytest ahorcado_test.py --cov=ahorcado --cov-report=xml
     
-    # --- ¡NUEVO PASO! ---
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       # No necesitas un token para repositorios públicos

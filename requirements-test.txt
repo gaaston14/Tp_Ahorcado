@@ -5,3 +5,4 @@ behave
 selenium
 webdriver-manager
 requests
+flake8
