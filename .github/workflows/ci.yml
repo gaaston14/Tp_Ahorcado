@@ -27,7 +27,6 @@ jobs:
         
     - name: Install Google Chrome
       run: |
-        # Selenium necesita un navegador real para correr en el CI
         sudo apt-get update
         sudo apt-get install -y google-chrome-stable
 
@@ -39,22 +38,9 @@ jobs:
 
     - name: Run logic tests with coverage (Unit Tests)
       run: |
-        # Ejecuta las pruebas unitarias
         python -m pytest ahorcado_test.py --cov=ahorcado --cov-report=term-missing
-
-    # --- Pasos para Pruebas de Aceptación (AT) ---
-
-    - name: Run Flask App in Background
-      env:
-        FLASK_APP: app.py
-        FLASK_ENV: development
-      run: |
-        # Inicia la app en segundo plano para que Selenium pueda probarla
-        nohup python -m flask run &
-        # Damos 3 segundos para que el servidor inicie
-        sleep 3
 
     - name: Run Acceptance Tests (Behave + Selenium)
       run: |
-        # Ejecuta las pruebas de Behave
+        # Este comando ahora inicia el servidor Y corre las pruebas
         behave

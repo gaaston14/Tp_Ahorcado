@@ -6,22 +6,19 @@ import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-# Importamos la app de Flask desde tu archivo app.py
 from app import app
 
 def before_all(context):
     """Se ejecuta una vez antes de todas las pruebas."""
     
-    # --- INICIAR EL SERVIDOR DE FLASK EN UN HILO ---
     context.server_thread = threading.Thread(target=app.run, kwargs={
         'port': 5000,
-        'debug': False, # Desactiva el reloader para que funcione en un hilo
+        'debug': True, 
         'use_reloader': False 
     })
     context.server_thread.daemon = True
     context.server_thread.start()
-    
-    # Esperamos a que el servidor esté listo
+
     retries = 5
     while retries > 0:
         try:
@@ -33,7 +30,6 @@ def before_all(context):
             retries -= 1
     if retries == 0:
         raise RuntimeError("No se pudo iniciar el servidor Flask")
-    # --- FIN DE INICIAR SERVIDOR ---
     
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
@@ -55,8 +51,6 @@ def before_scenario(context, scenario):
     """Se ejecuta antes de cada Escenario."""
     
     if "set_word_python" in scenario.tags:
-        # Ahora este mock SÍ funcionará porque el servidor
-        # está en el mismo proceso que el test.
         context.mock_random = unittest.mock.patch(
             'app.random.choice', 
             return_value='python'
@@ -74,8 +68,7 @@ def after_all(context):
     if hasattr(context, 'driver'):
         print("\nCerrando WebDriver en after_all...")
         context.driver.quit()
-    
-    # --- APAGAR EL SERVIDOR DE FLASK ---
+
     try:
         print("Enviando señal de apagado al servidor Flask...")
         requests.get("http://127.0.0.1:5000/shutdown")
@@ -83,4 +76,3 @@ def after_all(context):
         print("Servidor Flask detenido.")
     except Exception as e:
         print(f"Error al apagar el servidor: {e}")
-    # --- FIN DE APAGAR SERVIDOR ---
