@@ -1,8 +1,14 @@
 //Juego del ahorcado agiles
 
 Testeamos seguridad con CodeQL
+
+
 Test unitarios con pytest
+
+
 Test AT con selenium
+
+
 Test de estilo con flake8
 
 
