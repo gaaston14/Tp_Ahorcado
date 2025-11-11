@@ -87,10 +87,3 @@ def test_pierdo_y_muestra_que_perdi():
     assert logica_juego.perdio(vidas_restantes) == True
     assert logica_juego.mostrarResultado("python", vidas_restantes, acertadas) == "¡Perdiste!"
 
-# ----------------------------------------------------------------
-# NOTA: Los tests que simulaban 'jugar()' (con 'patch')
-# ya no aplican, porque 'jugar()' fue eliminado de 'ahorcado.py'.
-# Esa lógica ahora vive en 'app.py' y se testea de otra forma
-# (con un cliente de prueba de Flask), lo cual es más avanzado.
-# Por ahora, nos aseguramos de que la LÓGICA base funciona.
-# ----------------------------------------------------------------

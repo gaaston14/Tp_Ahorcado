@@ -1,10 +1,10 @@
 # ahorcado.py
 import random
 
-# NOTA: Eliminamos 'random.seed(0)' para que el juego sea diferente cada vez.
 
-letras_intentadas_global = set() # Ya no las usaremos globalmente, pero las dejamos
-letras_acertadas_global = set() # para no romper los tests si no se modifican.
+
+letras_intentadas_global = set() 
+letras_acertadas_global = set() 
 
 BANCO_PALABRAS = [
     "python",
@@ -27,7 +27,6 @@ def gano(palabra, letras_acertadas):
 
 def arriesgoPalabra(palabra, palabra_secreta):
     """Comprueba si la palabra arriesgada es correcta."""
-    # Mantenemos la lógica original de tu test (acepta 'python' por defecto)
     palabra_secreta_lower = (palabra_secreta or "python").lower()
     return palabra.lower() == palabra_secreta_lower
 
@@ -52,10 +51,8 @@ def arriesgoLetra(letra, palabra_secreta, letras_intentadas, letras_acertadas):
 
 def descuentaVida(letra_fue_correcta, vidas_actuales):
     """Resta una vida si el intento fue incorrecto."""
-    # Tu función original 'descuentaVida' tenía una lógica un poco extraña.
-    # La simplificamos: si la letra no fue correcta, resta 1.
     if not letra_fue_correcta:
-        return vidas_actuales - 1
+        return vidas_actuales + 1
     return vidas_actuales
     
 def mostrarProgreso(palabra, letras_acertadas):
@@ -74,8 +71,4 @@ def mostrarResultado(palabra, vidas_restantes, letras_acertadas):
         return "¡Ganaste!"
     if perdio(vidas_restantes):
         return "¡Perdiste!"
-    return None # El juego sigue
-
-# La función jugar() y el bloque if __name__ == "__main__":
-# se eliminan de este archivo. La lógica de "jugar"
-# ahora vivirá en app.py (nuestro servidor web).
+    return None 
