@@ -52,7 +52,7 @@ def arriesgoLetra(letra, palabra_secreta, letras_intentadas, letras_acertadas):
 def descuentaVida(letra_fue_correcta, vidas_actuales):
     """Resta una vida si el intento fue incorrecto."""
     if not letra_fue_correcta:
-        return vidas_actuales + 1
+        return vidas_actuales - 1
     return vidas_actuales
     
 def mostrarProgreso(palabra, letras_acertadas):
